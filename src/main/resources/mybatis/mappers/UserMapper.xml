@@ -10,12 +10,31 @@
         <result column="email" property="email"/>
         <result column="age" property="age"/>
         <result column="created_at" property="createdAt"/>
+
+        <!-- OneToOne mapping -->
+        <association property="profile" javaType="com.example.mybatis.model.Profile">
+            <id property="id" column="p_id"/>
+            <result property="fullName" column="p_full_name"/>
+            <result property="address" column="p_address"/>
+        </association>
+
+        <!-- ManyToMany mapping -->
+        <collection property="roles" ofType="com.example.mybatis.model.Role">
+            <id property="id" column="r_id"/>
+            <result property="name" column="r_name"/>
+        </collection>
     </resultMap>
 
     <select id="findById" parameterType="long" resultMap="UserResultMap">
-        SELECT id, username, email, age, created_at
-        FROM users
-        WHERE id = #{id}
+        SELECT
+            u.id, u.username, u.email,
+            p.id AS p_id, p.full_name AS p_full_name, p.address AS p_address,
+            r.id AS r_id, r.name AS r_name
+        FROM users u
+         LEFT JOIN profiles p ON u.id = p.user_id
+         LEFT JOIN user_roles ur ON u.id = ur.user_id
+         LEFT JOIN roles r ON ur.role_id = r.id
+        WHERE u.id = #{id}
     </select>
 
     <select id="findAll" resultMap="UserResultMap">
@@ -24,14 +43,32 @@
         ORDER BY id
     </select>
 
-    <select id="getUsersByPage" resultType="com.example.mybatis.model.User">
-        SELECT * FROM users
-        ORDER BY created_at DESC
-            LIMIT #{limit} OFFSET #{offset}
+    <select id="getUsersByPage" resultMap="UserResultMap">
+        SELECT u.id, u.username, u.email, u.age, u.created_at,
+               p.id AS p_id, p.full_name AS p_full_name, p.address AS p_address,
+               r.id AS r_id, r.name AS r_name
+        FROM (
+                 SELECT *
+                 FROM users
+                 WHERE (LOWER(username) LIKE CONCAT('%', LOWER(#{filter.keySearch}), '%')
+                     OR LOWER(email) LIKE CONCAT('%', LOWER(#{filter.keySearch}), '%'))
+                 ORDER BY created_at DESC
+                     LIMIT #{filter.size} OFFSET #{offset}
+             ) u
+        LEFT JOIN profiles p ON u.id = p.user_id
+        LEFT JOIN user_roles ur ON u.id = ur.user_id
+        LEFT JOIN roles r ON ur.role_id = r.id
     </select>
 
-    <select id="countUsers" resultType="long">
-        SELECT COUNT(*) FROM users
+    <select id="countUsers" parameterType="com.example.mybatis.request.UserFilter" resultType="long">
+        SELECT COUNT(*)
+        FROM users
+        <where>
+            <if test="keySearch != null and keySearch != ''">
+                (LOWER(username) LIKE CONCAT('%', LOWER(#{keySearch}), '%')
+                OR LOWER(email) LIKE CONCAT('%', LOWER(#{keySearch}), '%'))
+            </if>
+        </where>
     </select>
 
     <insert id="insert" parameterType="com.example.mybatis.model.User" useGeneratedKeys="true" keyProperty="id">

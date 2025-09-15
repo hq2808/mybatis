@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -13,6 +14,12 @@ public class User implements Cloneable {
     private String email;
     private Integer age;
     private LocalDateTime createdAt;
+
+    // OneToOne
+    private Profile profile;
+
+    // ManyToMany
+    private List<Role> roles;
 
     @Override
     public User clone() {

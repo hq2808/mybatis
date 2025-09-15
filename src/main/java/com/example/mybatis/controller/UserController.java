@@ -1,6 +1,7 @@
 package com.example.mybatis.controller;
 
 import com.example.mybatis.model.User;
+import com.example.mybatis.request.UserFilter;
 import com.example.mybatis.response.PageResponse;
 import com.example.mybatis.service.UserService;
 import org.springframework.web.bind.annotation.*;
@@ -25,12 +26,9 @@ public class UserController {
         return userService.getById(id);
     }
 
-    @GetMapping("/page")
-    public PageResponse<User> getUsersByPage(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
-        return userService.getUsersByPage(page, size);
+    @PostMapping("/page")
+    public PageResponse<User> getUsersByPage(@RequestBody UserFilter userFilter) {
+        return userService.getUsersByPage(userFilter);
     }
 
     @PostMapping

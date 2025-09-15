@@ -2,6 +2,7 @@ package com.example.mybatis.service;
 
 import com.example.mybatis.mapper.UserMapper;
 import com.example.mybatis.model.User;
+import com.example.mybatis.request.UserFilter;
 import com.example.mybatis.response.PageResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,11 +27,14 @@ public class UserService {
         return userMapper.findById(id);
     }
 
-    public PageResponse<User> getUsersByPage(int page, int size) {
-        int offset = (page - 1) * size;
-        List<User> users = userMapper.getUsersByPage(size, offset);
-        long total = userMapper.countUsers();
-        return new PageResponse<>(users, page, size, total);
+    public PageResponse<User> getUsersByPage(UserFilter userFilter) {
+        if (userFilter.getPage() < 1) userFilter.setPage(1);   // tránh âm
+        if (userFilter.getSize() < 1) userFilter.setSize(10);  // default fallback
+
+        int offset = (userFilter.getPage() - 1) * userFilter.getSize();
+        long total = userMapper.countUsers(userFilter);
+        List<User> users = userMapper.getUsersByPage(userFilter, offset);
+        return new PageResponse<>(users, userFilter.getPage(), userFilter.getSize(), total);
     }
 
 

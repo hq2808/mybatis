@@ -1,7 +1,10 @@
 package com.example.mybatis.mapper;
 
 import com.example.mybatis.model.User;
+import com.example.mybatis.request.UserFilter;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 @Mapper
@@ -13,7 +16,8 @@ public interface UserMapper {
     int update(User user);
     int deleteById(Long id);
 
-    List<User> getUsersByPage(int size, int offset);
+    List<User> getUsersByPage(@Param("filter") UserFilter filter,
+                              @Param("offset") int offset);
 
-    long countUsers();
+    long countUsers(UserFilter userFilter);
 }
