@@ -26,4 +26,6 @@ public interface UserMapper {
     long countUsers(UserFilter userFilter);
 
     List<UserDTO> callGetUsersByAge(@Param("ageParam") int age);
+
+    void callCountUsersByAge(Map<String, Object> params);
 }

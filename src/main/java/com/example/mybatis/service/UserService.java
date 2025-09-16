@@ -149,6 +149,18 @@ public class UserService {
     }
 
     public List<UserDTO> getUsersByAge(int age) {
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("ageParam", 20);
+
+        // total sẽ được set sau khi gọi SP
+        params.put("total", null);
+
+        userMapper.callCountUsersByAge(params);
+
+        Integer total = (Integer) params.get("total");
+        System.out.println("Total users: " + total);
+
         return userMapper.callGetUsersByAge(age);
     }
 }

@@ -136,4 +136,11 @@
             statementType="CALLABLE">
         {CALL get_users_by_age(#{ageParam, mode=IN, jdbcType=INTEGER})}
     </select>
+
+    <select id="callCountUsersByAge"
+            parameterType="map"
+            statementType="CALLABLE">
+        {CALL count_users(#{ageParam, mode=IN, jdbcType=INTEGER},
+                                 #{total, mode=OUT, jdbcType=INTEGER})}
+    </select>
 </mapper>
