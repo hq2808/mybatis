@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -76,8 +77,13 @@ public class UserService {
         int offset = (userFilter.getPage() - 1) * userFilter.getSize();
         long total = userMapper.countUsers(userFilter);
 
+        Map<String, Object> params = new HashMap<>();
+        params.put("size", userFilter.getSize());
+        params.put("offset", offset);
+        params.put("keySearch", userFilter.getKeySearch());
+
         // rows phẳng
-        List<UserWithProfileRoleDTO> rows = userMapper.getUsersByPage(userFilter, offset);
+        List<UserWithProfileRoleDTO> rows = userMapper.getUsersByPage(params);
 
         Map<Long, List<UserWithProfileRoleDTO>> groupMap = rows.stream()
                 .collect(Collectors.groupingBy(UserWithProfileRoleDTO::getUserId));
@@ -92,13 +98,17 @@ public class UserService {
                     user.setAge(first.getAge());
                     user.setCreatedAt(first.getCreatedAt());
 
-                    ProfileDTO profile = new ProfileDTO();
-                    profile.setId(first.getProfileId());
-                    profile.setFullName(first.getProfileFullName());
-                    profile.setAddress(first.getProfileAddress());
-                    user.setProfile(profile);
+                    if (first.getProfileId() != null) {
+                        ProfileDTO profile = new ProfileDTO();
+                        profile.setId(first.getProfileId());
+                        profile.setFullName(first.getProfileFullName());
+                        profile.setAddress(first.getProfileAddress());
+                        user.setProfile(profile);
+                    }
+
 
                     List<RoleDTO> roleDTOS = list.stream()
+                            .filter(r -> r.getRoleId() != null)
                             .map(r -> {
                                 RoleDTO roleDTO = new RoleDTO();
                                 roleDTO.setId(r.getRoleId());
@@ -117,15 +127,15 @@ public class UserService {
     @Transactional
     public void create(User user) {
         user.setCreatedAt(LocalDateTime.now());
-//        userMapper.insert(user);
-        List<User> users = new ArrayList<>();
-        for (int i = 1; i < 100; i++) {
-            User u = user.clone();
-            u.setUsername(user.getUsername() + i);
-            u.setEmail(user.getUsername() + i + "@gmail.com");
-            users.add(u);
-        }
-        userMapper.insertBatch(users);
+        userMapper.insert(user);
+//        List<User> users = new ArrayList<>();
+//        for (int i = 1; i < 100; i++) {
+//            User u = user.clone();
+//            u.setUsername(user.getUsername() + i);
+//            u.setEmail(user.getUsername() + i + "@gmail.com");
+//            users.add(u);
+//        }
+//        userMapper.insertBatch(users);
     }
 
     @Transactional

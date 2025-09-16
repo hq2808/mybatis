@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
+import java.util.Map;
 
 @Mapper
 public interface UserMapper {
@@ -19,8 +20,7 @@ public interface UserMapper {
     int update(User user);
     int deleteById(Long id);
 
-    List<UserWithProfileRoleDTO> getUsersByPage(@Param("filter") UserFilter filter,
-                              @Param("offset") int offset);
+    List<UserWithProfileRoleDTO> getUsersByPage(Map<String, Object> params);
 
     long countUsers(UserFilter userFilter);
 }

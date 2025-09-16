@@ -63,32 +63,36 @@
         FROM users
         ORDER BY id
     </select>
-    <select id="getUsersByPage" resultType="com.example.mybatis.dto.UserWithProfileRoleDTO">
+    <select id="getUsersByPage" parameterType="map" resultType="com.example.mybatis.dto.UserWithProfileRoleDTO">
         SELECT
-            u.id as userId,
-            u.username as username,
-            u.email as email,
-            u.age as age,
-            u.created_at as createdAt,
+        u.id as userId,
+        u.username as username,
+        u.email as email,
+        u.age as age,
+        u.created_at as createdAt,
 
-            p.id AS profileId,
-            p.full_name AS profileFullName,
-            p.address AS profileAddress,
+        p.id AS profileId,
+        p.full_name AS profileFullName,
+        p.address AS profileAddress,
 
-            r.id AS roleId,
-            r.name AS roleName
+        r.id AS roleId,
+        r.name AS roleName
         FROM (
-                 SELECT *
-                 FROM users
-                 WHERE (LOWER(username) LIKE CONCAT('%', LOWER(#{filter.keySearch}), '%')
-                     OR LOWER(email) LIKE CONCAT('%', LOWER(#{filter.keySearch}), '%'))
-                 ORDER BY created_at DESC
-                     LIMIT #{filter.size} OFFSET #{offset}
-             ) u
+        SELECT *
+        FROM users
+        WHERE 1 = 1
+        <if test="keySearch != null and keySearch != ''">
+            AND (LOWER(username) LIKE CONCAT('%', LOWER(#{keySearch}), '%')
+            OR LOWER(email) LIKE CONCAT('%', LOWER(#{keySearch}), '%'))
+        </if>
+        ORDER BY created_at DESC
+        LIMIT #{size} OFFSET #{offset}
+        ) u
         LEFT JOIN profiles p ON u.id = p.user_id
         LEFT JOIN user_roles ur ON u.id = ur.user_id
         LEFT JOIN roles r ON ur.role_id = r.id
     </select>
+
 
     <select id="countUsers" parameterType="com.example.mybatis.request.UserFilter" resultType="long">
         SELECT COUNT(*)
