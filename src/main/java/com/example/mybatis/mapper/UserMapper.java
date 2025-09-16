@@ -1,5 +1,6 @@
 package com.example.mybatis.mapper;
 
+import com.example.mybatis.dto.UserDTO;
 import com.example.mybatis.dto.UserWithProfileRoleDTO;
 import com.example.mybatis.model.User;
 import com.example.mybatis.request.UserFilter;
@@ -23,4 +24,6 @@ public interface UserMapper {
     List<UserWithProfileRoleDTO> getUsersByPage(Map<String, Object> params);
 
     long countUsers(UserFilter userFilter);
+
+    List<UserDTO> callGetUsersByAge(@Param("ageParam") int age);
 }

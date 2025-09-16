@@ -147,4 +147,8 @@ public class UserService {
     public void delete(Long id) {
         userMapper.deleteById(id);
     }
+
+    public List<UserDTO> getUsersByAge(int age) {
+        return userMapper.callGetUsersByAge(age);
+    }
 }

@@ -58,3 +58,13 @@ INSERT INTO user_roles (user_id, role_id) VALUES
                                               (2, 1),  -- jane_smith -> USER
                                               (2, 3),  -- jane_smith -> MODERATOR
                                               (3, 2);  -- admin_user -> ADMIN
+
+
+-- Stored Procedure get users by age
+CREATE PROCEDURE get_users_by_age(IN age_param INT)
+BEGIN
+    SELECT id, username, email, age, created_at
+    FROM users
+    WHERE age >= age_param
+    ORDER BY created_at DESC;
+END;

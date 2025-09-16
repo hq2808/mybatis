@@ -129,4 +129,11 @@
     <delete id="deleteById" parameterType="long">
         DELETE FROM users WHERE id = #{id}
     </delete>
+
+    <select id="callGetUsersByAge"
+            parameterType="int"
+            resultType="com.example.mybatis.dto.UserDTO"
+            statementType="CALLABLE">
+        {CALL get_users_by_age(#{ageParam, mode=IN, jdbcType=INTEGER})}
+    </select>
 </mapper>

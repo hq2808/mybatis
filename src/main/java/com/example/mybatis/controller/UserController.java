@@ -50,4 +50,9 @@ public class UserController {
         userService.delete(id);
         return "User deleted!";
     }
+
+    @GetMapping("/age/{age}")
+    public List<UserDTO> getById(@PathVariable int age) {
+        return userService.getUsersByAge(age);
+    }
 }
