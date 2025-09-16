@@ -29,3 +29,32 @@ CREATE TABLE user_roles (
     FOREIGN KEY (user_id) REFERENCES users(id),
     FOREIGN KEY (role_id) REFERENCES roles(id)
 );
+
+-- Thêm người dùng
+INSERT INTO users (username, email, age) VALUES
+                                             ('john_doe', 'john@example.com', 28),
+                                             ('jane_smith', 'jane@example.com', 32),
+                                             ('admin_user', 'admin@example.com', 35);
+
+-- Thêm profile (OneToOne)
+INSERT INTO profiles (user_id, full_name, address) VALUES
+                                                       (1, 'John Doe', '123 Main St'),
+                                                       (2, 'Jane Smith', '456 Elm St'),
+                                                       (3, 'Admin User', '789 Admin Rd');
+
+-- Thêm vai trò (roles)
+INSERT INTO roles (name) VALUES
+                             ('USER'),
+                             ('ADMIN'),
+                             ('MODERATOR');
+
+-- Gán vai trò cho người dùng (user_roles)
+-- john_doe: USER
+-- jane_smith: USER, MODERATOR
+-- admin_user: ADMIN
+
+INSERT INTO user_roles (user_id, role_id) VALUES
+                                              (1, 1),  -- john_doe -> USER
+                                              (2, 1),  -- jane_smith -> USER
+                                              (2, 3),  -- jane_smith -> MODERATOR
+                                              (3, 2);  -- admin_user -> ADMIN

@@ -1,5 +1,6 @@
 package com.example.mybatis.controller;
 
+import com.example.mybatis.dto.UserDTO;
 import com.example.mybatis.model.User;
 import com.example.mybatis.request.UserFilter;
 import com.example.mybatis.response.PageResponse;
@@ -22,7 +23,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public User getById(@PathVariable Long id) {
+    public UserDTO getById(@PathVariable Long id) {
         return userService.getById(id);
     }
 

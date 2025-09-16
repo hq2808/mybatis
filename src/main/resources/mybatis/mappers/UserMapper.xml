@@ -25,15 +25,36 @@
         </collection>
     </resultMap>
 
-    <select id="findById" parameterType="long" resultMap="UserResultMap">
+<!--    <select id="findById" parameterType="long" resultMap="UserResultMap">-->
+<!--        SELECT-->
+<!--            u.id, u.username, u.email,-->
+<!--            p.id AS p_id, p.full_name AS p_full_name, p.address AS p_address,-->
+<!--            r.id AS r_id, r.name AS r_name-->
+<!--        FROM users u-->
+<!--         LEFT JOIN profiles p ON u.id = p.user_id-->
+<!--         LEFT JOIN user_roles ur ON u.id = ur.user_id-->
+<!--         LEFT JOIN roles r ON ur.role_id = r.id-->
+<!--        WHERE u.id = #{id}-->
+<!--    </select>-->
+
+    <select id="findById" parameterType="long" resultType="com.example.mybatis.dto.UserWithProfileRoleDTO">
         SELECT
-            u.id, u.username, u.email,
-            p.id AS p_id, p.full_name AS p_full_name, p.address AS p_address,
-            r.id AS r_id, r.name AS r_name
+            u.id       AS userId,
+            u.username AS username,
+            u.email    AS email,
+            u.age      AS age,
+            u.created_at AS createdAt,
+
+            p.id        AS profileId,
+            p.full_name AS profileFullName,
+            p.address   AS profileAddress,
+
+            r.id        AS roleId,
+            r.name      AS roleName
         FROM users u
-         LEFT JOIN profiles p ON u.id = p.user_id
-         LEFT JOIN user_roles ur ON u.id = ur.user_id
-         LEFT JOIN roles r ON ur.role_id = r.id
+                 LEFT JOIN profiles p ON u.id = p.user_id
+                 LEFT JOIN user_roles ur ON u.id = ur.user_id
+                 LEFT JOIN roles r ON ur.role_id = r.id
         WHERE u.id = #{id}
     </select>
 

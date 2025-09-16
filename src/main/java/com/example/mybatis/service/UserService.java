@@ -1,5 +1,9 @@
 package com.example.mybatis.service;
 
+import com.example.mybatis.dto.ProfileDTO;
+import com.example.mybatis.dto.RoleDTO;
+import com.example.mybatis.dto.UserDTO;
+import com.example.mybatis.dto.UserWithProfileRoleDTO;
 import com.example.mybatis.mapper.UserMapper;
 import com.example.mybatis.model.User;
 import com.example.mybatis.request.UserFilter;
@@ -10,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -23,8 +28,44 @@ public class UserService {
         return userMapper.findAll();
     }
 
-    public User getById(Long id) {
-        return userMapper.findById(id);
+    public UserDTO getById(Long id) {
+//        return userMapper.findById(id);
+        List<UserWithProfileRoleDTO> rows = userMapper.findById(id);
+        if (rows == null || rows.isEmpty()) return null;
+
+        UserWithProfileRoleDTO first = rows.get(0);
+
+        UserDTO user = new UserDTO();
+        user.setId(first.getUserId());
+        user.setUsername(first.getUsername());
+        user.setEmail(first.getEmail());
+        user.setAge(first.getAge());
+        user.setCreatedAt(first.getCreatedAt());
+
+        // profile
+        if (first.getProfileId() != null) {
+            ProfileDTO profile = new ProfileDTO();
+            profile.setId(first.getProfileId());
+            profile.setFullName(first.getProfileFullName());
+            profile.setAddress(first.getProfileAddress());
+            user.setProfile(profile);
+        }
+
+        // roles (gom groupBy)
+        List<RoleDTO> roles = rows.stream()
+                .filter(r -> r.getRoleId() != null)
+                .map(r -> {
+                    RoleDTO role = new RoleDTO();
+                    role.setId(r.getRoleId());
+                    role.setName(r.getRoleName());
+                    return role;
+                })
+                .distinct()
+                .collect(Collectors.toList());
+
+        user.setRoles(roles);
+
+        return user;
     }
 
     public PageResponse<User> getUsersByPage(UserFilter userFilter) {
