@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping("/page")
-    public PageResponse<User> getUsersByPage(@RequestBody UserFilter userFilter) {
+    public PageResponse<UserDTO> getUsersByPage(@RequestBody UserFilter userFilter) {
         return userService.getUsersByPage(userFilter);
     }
 

@@ -19,7 +19,7 @@ public interface UserMapper {
     int update(User user);
     int deleteById(Long id);
 
-    List<User> getUsersByPage(@Param("filter") UserFilter filter,
+    List<UserWithProfileRoleDTO> getUsersByPage(@Param("filter") UserFilter filter,
                               @Param("offset") int offset);
 
     long countUsers(UserFilter userFilter);

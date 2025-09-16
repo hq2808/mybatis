@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -68,13 +69,47 @@ public class UserService {
         return user;
     }
 
-    public PageResponse<User> getUsersByPage(UserFilter userFilter) {
+    public PageResponse<UserDTO> getUsersByPage(UserFilter userFilter) {
         if (userFilter.getPage() < 1) userFilter.setPage(1);   // tránh âm
         if (userFilter.getSize() < 1) userFilter.setSize(10);  // default fallback
 
         int offset = (userFilter.getPage() - 1) * userFilter.getSize();
         long total = userMapper.countUsers(userFilter);
-        List<User> users = userMapper.getUsersByPage(userFilter, offset);
+
+        // rows phẳng
+        List<UserWithProfileRoleDTO> rows = userMapper.getUsersByPage(userFilter, offset);
+
+        Map<Long, List<UserWithProfileRoleDTO>> groupMap = rows.stream()
+                .collect(Collectors.groupingBy(UserWithProfileRoleDTO::getUserId));
+
+        List users = groupMap.values().stream()
+                .map(list -> {
+                    UserWithProfileRoleDTO first = list.get(0);
+                    UserDTO user = new UserDTO();
+                    user.setId(first.getUserId());
+                    user.setUsername(first.getUsername());
+                    user.setEmail(first.getEmail());
+                    user.setAge(first.getAge());
+                    user.setCreatedAt(first.getCreatedAt());
+
+                    ProfileDTO profile = new ProfileDTO();
+                    profile.setId(first.getProfileId());
+                    profile.setFullName(first.getProfileFullName());
+                    profile.setAddress(first.getProfileAddress());
+                    user.setProfile(profile);
+
+                    List<RoleDTO> roleDTOS = list.stream()
+                            .map(r -> {
+                                RoleDTO roleDTO = new RoleDTO();
+                                roleDTO.setId(r.getRoleId());
+                                roleDTO.setName(r.getRoleName());
+                                return roleDTO;
+                            }).collect(Collectors.toList());
+                    user.setRoles(roleDTOS);
+                    return user;
+                })
+                .collect(Collectors.toList());
+
         return new PageResponse<>(users, userFilter.getPage(), userFilter.getSize(), total);
     }
 

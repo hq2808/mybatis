@@ -63,11 +63,20 @@
         FROM users
         ORDER BY id
     </select>
+    <select id="getUsersByPage" resultType="com.example.mybatis.dto.UserWithProfileRoleDTO">
+        SELECT
+            u.id as userId,
+            u.username as username,
+            u.email as email,
+            u.age as age,
+            u.created_at as createdAt,
 
-    <select id="getUsersByPage" resultMap="UserResultMap">
-        SELECT u.id, u.username, u.email, u.age, u.created_at,
-               p.id AS p_id, p.full_name AS p_full_name, p.address AS p_address,
-               r.id AS r_id, r.name AS r_name
+            p.id AS profileId,
+            p.full_name AS profileFullName,
+            p.address AS profileAddress,
+
+            r.id AS roleId,
+            r.name AS roleName
         FROM (
                  SELECT *
                  FROM users
