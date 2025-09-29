@@ -28,4 +28,6 @@ public interface UserMapper {
     List<UserDTO> callGetUsersByAge(@Param("ageParam") int age);
 
     void callCountUsersByAge(Map<String, Object> params);
+
+    User findUserById(@Param("id") Long id);
 }

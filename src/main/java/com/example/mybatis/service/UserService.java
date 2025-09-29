@@ -30,6 +30,10 @@ public class UserService {
         return userMapper.findAll();
     }
 
+    public User getUserById(Long id) {
+        return userMapper.findUserById(id);
+    }
+
     public UserDTO getById(Long id) {
 //        return userMapper.findById(id);
         List<UserWithProfileRoleDTO> rows = userMapper.findById(id);

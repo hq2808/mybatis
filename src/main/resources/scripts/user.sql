@@ -68,3 +68,10 @@ BEGIN
     WHERE age >= age_param
     ORDER BY created_at DESC;
 END;
+
+ALTER TABLE users
+    ADD COLUMN created_by BIGINT,
+    ADD COLUMN updated_at DATETIME,
+    ADD COLUMN updated_by BIGINT,
+    ADD COLUMN active TINYINT(1),
+    ADD COLUMN deleted TINYINT(1);
